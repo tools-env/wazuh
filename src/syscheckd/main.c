@@ -106,7 +106,8 @@ int main(int argc, char **argv)
 
     /* Read syscheck config */
     if ((r = Read_Syscheck_Config(cfg)) < 0) {
-        merror_exit(CONFIG_ERROR, cfg);
+        merror(RCONFIG_ERROR, SYSCHECK, cfg);
+        syscheck.disabled = 1;
     } else if ((r == 1) || (syscheck.disabled == 1)) {
         if (!syscheck.dir) {
             if (!test_config) {
@@ -238,6 +239,15 @@ int main(int argc, char **argv)
                 mwarn(FIM_WARN_REALTIME_DISABLED, syscheck.dir[r]);
 #endif
             }
+
+            /*
+                Check directories options to determine whether to start
+                the whodata thread or not
+            */
+            if (syscheck.opts[r] & WHODATA_ACTIVE) {
+                syscheck.enable_whodata = 1;
+            }
+
             r++;
         }
     }
